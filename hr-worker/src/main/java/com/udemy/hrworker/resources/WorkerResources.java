@@ -1,7 +1,6 @@
 package com.udemy.hrworker.resources;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -35,15 +34,5 @@ public class WorkerResources {
 		
 		return ResponseEntity.ok(obj);
 
-		
-		
-		//		return Optional.ofNullable(obj).map(ResponseEntity.ok(obj)).orElse(ResponseEntity.noContent());
-		//		
-//		ResponseEntity<Worker> okOrNot = null; 
-//		
-//		Optional<Worker> worker = repository.findById(id);
-//		worker.ofNullable((ResponseEntity<Optional<Worker>>) okOrNot.notFound()).orElse((ResponseEntity<Optional<Worker>>)okOrNot.ok(worker));
-//	
-//		return Optional.ofNullable(worker).map(ResponseEntity.ok(worker)).orElse(ResponseEntity.notFound());
 	}
 }
