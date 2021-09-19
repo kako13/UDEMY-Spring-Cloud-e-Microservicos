@@ -1,32 +1,21 @@
 package com.udemy.hrpayroll.service;
 
-import java.util.HashMap;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
+import com.udemy.hrpayroll.clients.WorkerFeignClients;
 import com.udemy.hrpayroll.entities.Payment;
 import com.udemy.hrpayroll.entities.Worker;
 
 @Service
 public class PaymentService {
 	
-	@Value("${hr-worker.host}")
-	private String WORKER_HOST; 
-	
-	
 	@Autowired
-	private RestTemplate restTemplate;
+	private  WorkerFeignClients workerFeignClients;
 	
 	public Payment getPayment(Long workerId, Integer days) {
 		
-		HashMap<String, String> uriVariables = new HashMap<>();
-		uriVariables.put("id", String.valueOf(workerId));
-		
-		
-		Worker worker = restTemplate.getForObject(WORKER_HOST+"/workers/{id}", Worker.class, uriVariables);
+		Worker worker = workerFeignClients.findById(workerId).getBody();
 		
 		return new Payment(worker.getName(), worker.getDailyIncome(), days);
 	}

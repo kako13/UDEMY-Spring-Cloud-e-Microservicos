@@ -1,4 +1,4 @@
-package com.udemy.hrpayroll.config;
+package com.udemy.hrpayroll.service.obsoleto;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
