@@ -1,6 +1,9 @@
 package com.udemy.hrpayroll.resourses;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +18,11 @@ import com.udemy.hrpayroll.service.PaymentService;
 @RequestMapping(value = "/payments")
 public class PaymentResources {
 
+	private static Logger logger = LoggerFactory.getLogger(PaymentResources.class);
+	
+	@Autowired
+	private Environment env;
+	
 	@Autowired
 	private PaymentService service;
 	
@@ -22,6 +30,9 @@ public class PaymentResources {
 	@GetMapping(value = "/{workerId}/days/{days}")
 	public ResponseEntity<Payment> getPayment(@PathVariable Long workerId,
 													@PathVariable Integer days){
+		
+		logger.info("PORT = "+ env.getProperty("local.server.port"));
+		
 		Payment payment = service.getPayment(workerId, days);
 
 		return ResponseEntity.ok(payment);
