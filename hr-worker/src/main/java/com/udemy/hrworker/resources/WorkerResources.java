@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.udemy.hrworker.entities.Worker;
-import com.udemy.hrworker.entities.WorkerRepository;
+import com.udemy.hrworker.repositories.WorkerRepository;
 
 @RestController
 @RequestMapping(value = "/workers")
