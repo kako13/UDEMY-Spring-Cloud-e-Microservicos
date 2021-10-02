@@ -4,13 +4,12 @@ import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.udemy.hrpayroll.entities.Payment;
 import com.udemy.hrpayroll.entities.Worker;
 
-@Service
+//@Service
 public class PaymentService_RestTemplate {
 	
 	@Value("${hr-worker.host}")

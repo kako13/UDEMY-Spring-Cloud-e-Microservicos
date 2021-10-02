@@ -34,11 +34,12 @@ public class WorkerResources {
 	private WorkerRepository repository;
 
 	@GetMapping(value = "/configs")
-	public ResponseEntity<Void> getConfigs() {
+	public ResponseEntity<String> getConfigs() {
 		
 		logger.info("CONFIG = "+ testConfig);
 		
-		return ResponseEntity.noContent().build();
+//		return ResponseEntity.noContent().build();
+		return ResponseEntity.ok(testConfig);
 	}
 
 	@GetMapping
@@ -53,11 +54,11 @@ public class WorkerResources {
 
 		// Teste forcando a espera de 3 segundos
 		
-		try {
-			Thread.sleep(3000L);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+//		try {
+//			Thread.sleep(3000L);
+//		} catch (InterruptedException e) {
+//			e.printStackTrace();
+//		}
 		 
 		logger.info("PORT = " + env.getProperty("local.server.port"));
 
