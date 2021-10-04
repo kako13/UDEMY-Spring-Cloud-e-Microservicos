@@ -29,7 +29,7 @@
 	docker run -p 8888:8888 --name hr-config-server --network hr-net -e GITHUB_USER=acenelio -e GITHUB_PASS= hr-config-server:v1
 
 
-## hr-eureka-server
+## hr-eureka-server 
 
 	FROM openjdk:11
 	VOLUME /tmp
@@ -142,6 +142,6 @@ Listar containers
 
 	docker ps -a
 
-Acompanhar logs do container em execução
+Acompanhar logs do container em execuï¿½ï¿½o
 
 	docker logs -f <container-id>
