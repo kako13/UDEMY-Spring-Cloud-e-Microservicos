@@ -142,6 +142,6 @@ Listar containers
 
 	docker ps -a
 
-Acompanhar logs do container em execu��o
+Acompanhar logs do container em execução
 
 	docker logs -f <container-id>
