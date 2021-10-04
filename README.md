@@ -1,45 +1,151 @@
-**Edit a file, create a new file, and clone from Bitbucket in under 2 minutes**
+# Criando e testando containers Docker
 
-When you're done, you can delete the content in this README and update the file with details for others getting started with your repository.
+## Criar rede docker para sistema hr
+```
+docker network create hr-net
+```
 
-*We recommend that you open this README in another tab as you perform the tasks below. You can [watch our video](https://youtu.be/0ocf7u76WSo) for a full demo of all the steps in this tutorial. Open the video in a new tab to avoid leaving Bitbucket.*
+## Testando perfil dev com Postgresql no Docker
+```
+docker pull postgres:12-alpine
 
----
+docker run -p 5432:5432 --name hr-worker-pg12 --network hr-net -e POSTGRES_PASSWORD=1234567 -e POSTGRES_DB=db_hr_worker postgres:12-alpine
 
-## Edit a file
+docker run -p 5432:5432 --name hr-user-pg12 --network hr-net -e POSTGRES_PASSWORD=1234567 -e POSTGRES_DB=db_hr_user postgres:12-alpine
+```
 
-You’ll start by editing this README file to learn how to edit a file in Bitbucket.
+## hr-config-server
+```
+FROM openjdk:11
+VOLUME /tmp
+EXPOSE 8888
+ADD ./target/hr-config-server-0.0.1-SNAPSHOT.jar hr-config-server.jar
+ENTRYPOINT ["java","-jar","/hr-config-server.jar"]
+``` 
+```
+mvnw clean package
 
-1. Click **Source** on the left side.
-2. Click the README.md link from the list of files.
-3. Click the **Edit** button.
-4. Delete the following text: *Delete this line to make a change to the README from Bitbucket.*
-5. After making your change, click **Commit** and then **Commit** again in the dialog. The commit page will open and you’ll see the change you just made.
-6. Go back to the **Source** page.
+docker build -t hr-config-server:v1 .
 
----
+docker run -p 8888:8888 --name hr-config-server --network hr-net -e GITHUB_USER=acenelio -e GITHUB_PASS= hr-config-server:v1
+```
 
-## Create a file
+## hr-eureka-server
+```
+FROM openjdk:11
+VOLUME /tmp
+EXPOSE 8761
+ADD ./target/hr-eureka-server-0.0.1-SNAPSHOT.jar hr-eureka-server.jar
+ENTRYPOINT ["java","-jar","/hr-eureka-server.jar"]
+``` 
+```
+mvnw clean package
 
-Next, you’ll add a new file to this repository.
+docker build -t hr-eureka-server:v1 .
 
-1. Click the **New file** button at the top of the **Source** page.
-2. Give the file a filename of **contributors.txt**.
-3. Enter your name in the empty file space.
-4. Click **Commit** and then **Commit** again in the dialog.
-5. Go back to the **Source** page.
+docker run -p 8761:8761 --name hr-eureka-server --network hr-net hr-eureka-server:v1
+```
 
-Before you move on, go ahead and explore the repository. You've already seen the **Source** page, but check out the **Commits**, **Branches**, and **Settings** pages.
+## hr-worker
+```
+FROM openjdk:11
+VOLUME /tmp
+ADD ./target/hr-worker-0.0.1-SNAPSHOT.jar hr-worker.jar
+ENTRYPOINT ["java","-jar","/hr-worker.jar"]
+``` 
+```
+mvnw clean package -DskipTests
 
----
+docker build -t hr-worker:v1 .
 
-## Clone a repository
+docker run -P --network hr-net hr-worker:v1
+```
 
-Use these steps to clone from SourceTree, our client for using the repository command-line free. Cloning allows you to work on your files locally. If you don't yet have SourceTree, [download and install first](https://www.sourcetreeapp.com/). If you prefer to clone from the command line, see [Clone a repository](https://confluence.atlassian.com/x/4whODQ).
+## hr-user
+```
+FROM openjdk:11
+VOLUME /tmp
+ADD ./target/hr-user-0.0.1-SNAPSHOT.jar hr-user.jar
+ENTRYPOINT ["java","-jar","/hr-user.jar"]
+``` 
+```
+mvnw clean package -DskipTests
 
-1. You’ll see the clone button under the **Source** heading. Click that button.
-2. Now click **Check out in SourceTree**. You may need to create a SourceTree account or log in.
-3. When you see the **Clone New** dialog in SourceTree, update the destination path and name if you’d like to and then click **Clone**.
-4. Open the directory you just created to see your repository’s files.
+docker build -t hr-user:v1 .
 
-Now that you're more familiar with your Bitbucket repository, go ahead and add a new file locally. You can [push your change back to Bitbucket with SourceTree](https://confluence.atlassian.com/x/iqyBMg), or you can [add, commit,](https://confluence.atlassian.com/x/8QhODQ) and [push from the command line](https://confluence.atlassian.com/x/NQ0zDQ).
+docker run -P --network hr-net hr-user:v1
+```
+
+## hr-payroll
+```
+FROM openjdk:11
+VOLUME /tmp
+ADD ./target/hr-payroll-0.0.1-SNAPSHOT.jar hr-payroll.jar
+ENTRYPOINT ["java","-jar","/hr-payroll.jar"]
+``` 
+```
+mvnw clean package -DskipTests
+
+docker build -t hr-payroll:v1 .
+
+docker run -P --network hr-net hr-payroll:v1
+```
+
+## hr-oauth
+```
+FROM openjdk:11
+VOLUME /tmp
+ADD ./target/hr-oauth-0.0.1-SNAPSHOT.jar hr-oauth.jar
+ENTRYPOINT ["java","-jar","/hr-oauth.jar"]
+``` 
+```
+mvnw clean package -DskipTests
+
+docker build -t hr-oauth:v1 .
+
+docker run -P --network hr-net hr-oauth:v1
+```
+
+## hr-api-gateway-zuul
+```
+FROM openjdk:11
+VOLUME /tmp
+EXPOSE 8765
+ADD ./target/hr-api-gateway-zuul-0.0.1-SNAPSHOT.jar hr-api-gateway-zuul.jar
+ENTRYPOINT ["java","-jar","/hr-api-gateway-zuul.jar"]
+``` 
+```
+mvnw clean package -DskipTests
+
+docker build -t hr-api-gateway-zuul:v1 .
+
+docker run -p 8765:8765 --name hr-api-gateway-zuul --network hr-net hr-api-gateway-zuul:v1
+```
+
+## Alguns comandos Docker
+Criar uma rede Docker
+```
+docker network create <nome-da-rede>
+```
+Baixar imagem do Dockerhub
+```
+docker pull <nome-da-imagem:tag>
+```
+Ver imagens
+```
+docker images
+```
+Criar/rodar um container de uma imagem
+```
+docker run -p <porta-externa>:<porta-interna> --name <nome-do-container> --network <nome-da-rede> <nome-da-imagem:tag> 
+```
+Listar containers
+```
+docker ps
+
+docker ps -a
+```
+Acompanhar logs do container em execu��o
+```
+docker logs -f <container-id>
+```
